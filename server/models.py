@@ -10,12 +10,12 @@ class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, unique=True)
+    username = db.Column(db.String, unique=True, nullable=False)
     _password_hash = db.Column(db.String)
     image_url = db.Column(db.String)
     bio = db.Column(db.String)
     # have many recipes.
-    recipes = relationship("Recipe", backref="user")
+    recipes = db.relationship("Recipe", backref="user")
 
     @validates("username")
     def validate_username(self, key, username):
@@ -26,7 +26,7 @@ class User(db.Model, SerializerMixin):
         
     @hybrid_property
     def password_hash(self):
-        raise Exception('Password hashes may not be viewed.')
+        raise AttributeError('Password hashes may not be viewed.')
 
     @password_hash.setter
     def password_hash(self, password):
@@ -68,4 +68,4 @@ class Recipe(db.Model, SerializerMixin):
         return instruction
 
     def __repr__(self):
-        return f"Recipe {self.id} {self.title}"
+        return f"Recipe {self.id} {self.title} {self.user_id}"
